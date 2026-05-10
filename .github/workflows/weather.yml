@@ -1,0 +1,38 @@
+name: Weather Report
+
+on:
+  schedule:
+    - cron: '59 23 * * *'
+
+  workflow_dispatch:
+
+jobs:
+  weather:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configurar Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Instalar dependencias
+      run: pip install -r requirements.txt
+
+    - name: Ejecutar script
+      run: python weather.py
+
+    - name: Configurar Git
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+
+    - name: Commit JSON
+      run: |
+        git add *.json
+        git commit -m "Nuevo reporte de temperaturas" || echo "Sin cambios"
+
+    - name: Push cambios
+      run: git push
